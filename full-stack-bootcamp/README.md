@@ -477,6 +477,21 @@ const TaskCard = ({
 export default TaskCard;
 ```
 
+### Example usage
+
+```tsx
+<TaskCard
+  id={1}
+  title="Distribute Food"
+  description="Help distribute food packages to families in need during Ramadan."
+  date="Mar 15th 2026"
+  activeCrescents={4}
+  variant="wide"
+  volunteersNeeded={5}
+  onClick={() => console.log("Card clicked")}
+/>
+```
+
 ### Step C — Add cards to `App.tsx`
 
 Add these imports at the top of `App.tsx`:
