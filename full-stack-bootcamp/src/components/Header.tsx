@@ -3,8 +3,9 @@
 
 const Header = () => {
   return (
-    <div>
+    <div className="text-6xl text-amber-100 font-lexend text-center">
       {/* TODO: Add the title */}
+      Ramadan Community Board
     </div>
   );
 };

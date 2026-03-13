@@ -6,7 +6,7 @@
 //  else will update automatically.
 // ─────────────────────────────────────────────────────────────
 
-const BASE_URL = "http://localhost:5000";
+const BASE_URL = "https://supreme-adventure-v6xv4xrj9gxwhjrp-5000.app.github.dev/";
 
 // ── The shape of a Task as it comes back from the backend ──────
 // The backend uses `priority` (1‑5) instead of `activeCrescents`.
