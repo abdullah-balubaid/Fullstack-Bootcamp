@@ -6,7 +6,7 @@ Abdullah Talal Balubaid
 
 * **Frontend:** React, Tailwind CSS, TypeScript
 * **Backend:** Flask, Python
-* **AI:** Google Gemini API (Flash 1.5)
+* **AI:** Google Gemini API (Flash 2.0)
 
 
 ## Description 📂
