@@ -35,7 +35,6 @@ function App() {
     const updated = await updateTask(id, {
       completed: !task.completed,
       completedOn: task.completed ? undefined : task.date,
-      activeCrescents: task.completed ? task.activeCrescents : 5,
     });
     setTasks((prev) => prev.map((t) => (t.id === id ? updated : t)));
   };
@@ -64,7 +63,7 @@ function App() {
       <img src={lanternLeft} alt="Left Lanterns" className="absolute top-0 left-0 w-32 md:w-70 opacity-80 z-2" />
 
       {/* Gold border frame */}
-      <div className="relative z-2 mx-auto w-[95vw] min-h-[90vh] border-[3px] border-(--text-cream) flex flex-col items-center gap-10 py-12 px-10 shadow-2xl my-12">
+      <div className="relative z-2 mx-auto w-[95vw] h-[90vh] border-[3px] border-(--text-cream) flex flex-col items-center gap-10 py-12 px-10 shadow-2xl my-12">
         <div className="max-w-4xl flex flex-col items-center justify-start gap-6">
           <Header />
           <Input onTaskAdded={handleTaskAdded} />
