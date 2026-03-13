@@ -1,7 +1,16 @@
-Abdullah Talal Balubaid
+# Abdullah Talal Balubaid
+
+A brief, punchy description of your project goes here. Turn your chores into epic missions!
+
+## Tech Stack 🛠️
+
+* **Frontend:** React, Tailwind CSS, TypeScript
+* **Backend:** Flask, Python
+* **AI:** Google Gemini API (Flash 1.5)
 
 
------------------------------ Theme Description--------------------------------------------
+## Description 📂
+
 A Cyber-Retro dashboard that turns chores into Side Quests. 🌌 
 It uses a high-contrast "Midnight & Neon" aesthetic where every task is a mission to earn your spot on the Global Leaderboard. 🏆
 
