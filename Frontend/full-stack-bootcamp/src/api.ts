@@ -6,7 +6,7 @@
 //  else will update automatically.
 // ─────────────────────────────────────────────────────────────
 
-const BASE_URL = "https://supreme-adventure-v6xv4xrj9gxwhjrp-5000.app.github.dev/";
+const BASE_URL = "https://psychic-space-train-v6xv4xrj9qp5cwg6x-5000.app.github.dev/";
 
 // ── The shape of a Task as it comes back from the backend ──────
 // The backend uses `priority` (1‑5) instead of `activeCrescents`.
@@ -23,6 +23,7 @@ export type Task = {
   completedOn?: string;
   summary?: string[];
   volunteersNeeded?: number;
+  tag?:string;
 };
 
 // Internal helper — maps the raw backend object to our Task shape.
@@ -39,6 +40,7 @@ function mapTask(raw: any): Task {
     completedOn: raw.completedOn,
     summary: raw.summary,
     volunteersNeeded: raw.volunteersNeeded,
+    tag:raw.tag,
   };
 }
 
@@ -102,4 +104,12 @@ export async function deleteTask(id: number): Promise<boolean> {
   });
   if (!response.ok) throw new Error("Failed to delete task");
   return true;
+}
+
+// ── PUT /todos/:id/complete ──────────────────────────────────
+// Specifically marks a task as complete using the new dedicated route.
+export async function completeTask(id: number): Promise<Task> {
+  const response = await fetch(`${BASE_URL}/todos/${id}/complete`, { method: "PUT" });
+  if (!response.ok) throw new Error("Failed to complete task");
+  return mapTask(await response.json());
 }

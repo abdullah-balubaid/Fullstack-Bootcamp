@@ -1,24 +1,22 @@
 @import url('https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&display=swap');
 @import "tailwindcss";
 
-
 :root {
-	--bg-dark: #0A1128;
-	--panel-deep: #0D1726;
-	--gold-primary: #D4AF37;
-	--gold-cream: #FFF1AA;
-	--gold-bright: #E8C84A;
-	--cta-1: #C9A227;
-	--cta-2: #E8C84A;
-	--text-cream: #F8E4AE;
-	--scroll-track: rgba(212,175,55,0.06);
-	--scroll-thumb-start: rgba(212,175,55,0.95);
-	--scroll-thumb-end: rgba(212,175,55,0.6);
+  /* Deep Arcade Cabinet Black */
+  --bg-dark: #050505; 
+  --panel-deep: #1A1A2E; /* Dark midnight purple */
+
+  /* Arcade Neon Accents */
+  --gold-cream: #00e1ff;   /* "Player 1" Cyan */
+  --gold-primary: #e5ff00; /* "Power Up" Neon Pink */
+  --gold-bright: #1466ff;  /* "Level Up" Neon Green */
+  
+  --text-cream: #FFFFFF;   /* High-contrast white */
 }
 
-/* Crescents  Colrs */
+/* Crescents  Colors */
 .crescent-active {
-  filter: drop-shadow(0 0 6px rgba(212,175,55,0.4)) saturate(1.2) brightness(1);
+  filter: drop-shadow(0 0 6px rgb(255, 196, 1)) saturate(1.2) brightness(1);
 }
 .crescent-inactive {
   filter: grayscale(1) brightness(0.6) opacity(0.55);
@@ -44,34 +42,34 @@ html, body {
 
 /*========*/
 html::-webkit-scrollbar, body::-webkit-scrollbar {
-	display: none; /* Chrome, Safari, Opera */
+    display: none; /* Chrome, Safari, Opera */
 }
 
-/* Themed scrollbar — gold on dark navy */
+/* Themed scrollbar — Neon Cyan on Dark Navy */
 ::-webkit-scrollbar {
-	width: 6px;
+    width: 8px;
 }
 ::-webkit-scrollbar-track {
-	background: rgba(212, 175, 55, 0.08);
-	border-radius: 10px;
-	margin: 4px 0;
+    background: var(--panel-deep);
+    border-radius: 10px;
+    margin: 4px 0;
 }
 ::-webkit-scrollbar-thumb {
-	background: linear-gradient(180deg, var(--gold-primary) 0%, #a07d1c 100%);
-	border-radius: 10px;
-	box-shadow: 0 0 6px rgba(212, 175, 55, 0.5);
+    background: var(--gold-cream);
+    border-radius: 10px;
+    box-shadow: 0 0 8px var(--gold-cream);
 }
 ::-webkit-scrollbar-thumb:hover {
-	background: linear-gradient(180deg, #f0cc55 0%, var(--gold-primary) 100%);
-	box-shadow: 0 0 10px rgba(212, 175, 55, 0.8);
+    background: var(--text-cream);
+    box-shadow: 0 0 12px var(--gold-cream);
 }
 ::-webkit-scrollbar-corner {
-	background: transparent;
+    background: transparent;
 }
 
 /* Firefox */
 * {
     scrollbar-width: thin;
-    scrollbar-color: var(--gold-primary) rgba(212, 175, 55, 0.08);
+    scrollbar-color: var(--gold-cream) var(--panel-deep);
 }
 

@@ -1,7 +1,5 @@
-import Crescent from "../assets/Crescent.svg";
-import Lantern from "../assets/Lantern.png";
-
-// TODO (Step 5): Build the TaskCard component
+import star_priority from "../assets/star_priority.svg";
+import joyStick from "../assets/joyStick.png"; // Assuming it's a PNG, change to .svg if needed!
 
 // Step 5A — Define the shape of a task's props:
 export type TaskCardProps = {
@@ -9,13 +7,14 @@ export type TaskCardProps = {
   title: string;
   description: string;
   date: string;
-  activeCrescents?: number;   // how many crescents to show as active (0–5)
+  activeCrescents?: number;   // Keeps the same data name, but renders stars
   variant?: "small" | "wide";
   completed?: boolean;
-  completedOn?: string;       // e.g. "Mar 12th 2026"
+  completedOn?: string;       
   summary?: string[];
   volunteersNeeded?: number;
-  onClick?: () => void;       // called when the card is clicked
+  tag?: string;               // CHALLENGE 2: Added the tag prop
+  onClick?: () => void;
 };
 
 // Step 5B — Build the card UI:
@@ -27,83 +26,98 @@ const TaskCard = ({
   variant         = "small",
   completed       = false,
   completedOn,
+  tag,                        // Destructure the tag
   onClick,
 }: TaskCardProps) => {
-  const isWide = variant == "wide";
+  const isWide = variant === "wide";
+
   return (
     <div
-    onClick={onClick}
-    className={[
-      "relative bg-(--bg-dark) bg-opacity-20 backdrop-blur-[3px]",
-      "border rounded-2xl flex flex-col items-center",
-      "px-6 pt-4 pb-5 overflow-hidden",
-      completed
-      ? "border-(--gold-cream) shadow-[0_0_20px_3px_rgba(212,175,55,0.18)]"
-      : "border-(--gold-cream)",
-      isWide ? "md:col-span-2" : "",
-      onClick ? "cursor-pointer hover:border-(--gold-cream) transition-colors\
-      duration-200" : "", 
-    ].filter(Boolean).join(" ")}>
+      onClick={onClick}
+      className={[
+        "relative bg-(--bg-dark) bg-opacity-40 backdrop-blur-md",
+        "border rounded-2xl flex flex-col items-center",
+        "px-6 pt-4 pb-5 overflow-hidden",
+        // Changed the shadow to a neon green glow when completed
+        completed
+          ? "border-(--gold-bright) shadow-[0_0_15px_rgba(0,242,255,0.3)]" 
+          : "border-(--gold-cream)",
+        isWide ? "md:col-span-2" : "",
+        onClick ? "cursor-pointer hover:border-(--gold-primary) transition-colors duration-200" : "", 
+      ].filter(Boolean).join(" ")}
+    >
+      {completed && (
+        <div className="absolute inset-0 bg-black bg-opacity-40 rounded-2xl pointer-events-none"/>
+      )}
 
-    {completed && (
-      <div className="absolute inset-0 bg-(--bg-dark) bg-opacity-25 
-      rounded-2xl pointer-events-none"/> )}
+      {/* CHALLENGE 2: Render the Tag Badge */}
+      {tag && (
+        <span className="text-[10px] font-black px-2 py-1 mb-2 rounded bg-(--gold-cream)/20 text-(--gold-cream) border border-(--gold-cream) w-fit uppercase tracking-wider shadow-[0_0_5px_rgba(0,242,255,0.4)]">
+          {tag}
+        </span>
+      )}
 
-    <div className="relative w-full flex items-center justify-between gap-2
-    min-h-12">
-    <img src={Lantern} alt="" className={`w-5 h-8 shrink-0 ${completed ?
-      "opacity-50" : "opacity-85"}`} />
-    <h3 className={`font-medium text-center text-base leading-tight 
-    ${completed ? "text-(--text-cream)/70" : "text-(--text-cream)" }`}>
-        {title}
-      </h3>
-    <img src={Lantern} alt="" className={`w-5 h-8 shrink-0 ${completed ?
-    "opacity-50" : "opacity-85"}`} />
-    </div>
-    
-    <p className={`relative flex-1 flex items-center text-center
-      leading-snug text-sm mt-2 px-1
-      ${completed ? "text-amber-100/45" : "text-amber-100/80"}
+      {/* Title Framed by Joysticks */}
+      <div className="relative w-full flex items-center justify-between gap-2 min-h-12 mt-1">
+        <img 
+          src={joyStick} 
+          alt="Joystick Left" 
+          className={`w-6 h-6 shrink-0 ${completed ? "opacity-40 grayscale" : "opacity-90"}`} 
+        />
+        <h3 className={`font-bold text-center text-base leading-tight uppercase tracking-wide
+          ${completed ? "text-(--text-cream)/50" : "text-(--text-cream)" }`}>
+          {title}
+        </h3>
+        <img 
+          src={joyStick} 
+          alt="Joystick Right" 
+          className={`w-6 h-6 shrink-0 ${completed ? "opacity-40 grayscale" : "opacity-90"}`} 
+        />
+      </div>
+      
+      {/* Description - Removed amber, using neutral gray/white for arcade contrast */}
+      <p className={`relative flex-1 flex items-center text-center leading-snug text-sm mt-2 px-1
+        ${completed ? "text-gray-500" : "text-gray-300"}
       `}>
         {description}
       </p>
 
-    <div className="relative flex items-center gap-1 mt-3">
-      {Array.from({ length: 5 }).map((_,i) => (
-      <img 
-      key={i}
-      src={Crescent}
-      alt={i < activeCrescents ? "active" : "inactive"}
-      className={"w-6 h-6 " + (i < activeCrescents ? "crescent-active"
-        : "crescent-inactive")}
-      />
-      ))}
-    </div>
+      {/* Priority Stars (Replacing the Crescents) */}
+      <div className="relative flex items-center gap-1 mt-4 mb-1">
+        {Array.from({ length: 5 }).map((_, i) => (
+          <img 
+            key={i}
+            src={star_priority}
+            alt={i < activeCrescents ? "active-star" : "inactive-star"}
+            // Arcade styling: lit stars glow, inactive stars are dim
+            className={`w-5 h-5 transition-all ${
+              i < activeCrescents 
+                ? "opacity-100 drop-shadow-[0_0_5px_var(--gold-primary)]" 
+                : "opacity-20 grayscale"
+            }`}
+          />
+        ))}
+      </div>
   
-  {completed ? (
+      {/* Footer / Date area */}
+      {completed ? (
         <div className="relative w-full mt-3">
           <div className="flex items-center gap-2 w-full">
-            <span className="flex-1 border-t-2 border-(--gold-bright)/70" />
-            <span className="text-(--gold-bright) text-base font-bold tracking-wide whitespace-nowrap">
-              Completed
+            <span className="flex-1 border-t border-(--gold-bright)/50" />
+            <span className="text-(--gold-bright) text-xs font-black tracking-widest uppercase">
+              Mission Clear
             </span>
-            <span className="flex-1 border-t-2 border-(--gold-bright)/70" />
+            <span className="flex-1 border-t border-(--gold-bright)/50" />
           </div>
-          <p className="text-center text-amber-200/50 text-xs mt-1">
+          <p className="text-center text-gray-500 text-[10px] mt-1 uppercase tracking-wider">
             {completedOn ?? date}
           </p>
         </div>
       ) : (
-        <p className="text-amber-200/50 text-xs mt-3">{date}</p>
+        <p className="text-gray-500 font-bold tracking-widest text-[10px] mt-3 uppercase">{date}</p>
       )}
     </div>
   );
 };
 
 export default TaskCard;
-
-
-
-
-
-

@@ -1,229 +1,192 @@
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
-import Crescent from "../assets/Crescent.svg";
+import star_priority from "../assets/star_priority.svg"; // Make sure extension matches your file (.png or .svg)
 import type { TaskCardProps } from "./TaskCard";
+import type { Task } from "../api";
 
-// ✅ Added onUpdate and onDelete to the props
 type TaskModalProps = TaskCardProps & {
   open: boolean;
   onClose: () => void;
   onToggleCompleted?: () => void;
-  onUpdate?: (changes: Partial<TaskCardProps>) => void;
-  onDelete?: () => void;
+  onUpdate?: (changes: Partial<Task>) => void; 
+  onDelete?: () => void;                       
   totalCrescents?: number;
+  startInEditMode?: boolean;
 };
 
 const TaskModal = ({
-  open, onClose, onToggleCompleted, onUpdate, onDelete,
-  title, description, date,
-  activeCrescents = 0, totalCrescents = 5,
-  summary = [], volunteersNeeded,
-  completed = false, completedOn,
+  open, 
+  onClose, 
+  onToggleCompleted,
+  onUpdate,
+  onDelete,
+  title, 
+  description, 
+  date,
+  activeCrescents = 0, 
+  summary = [], 
+  volunteersNeeded,
+  tag, // ✅ ADDED: Pulling in the tag from the database
+  completed = false, 
+  completedOn,
+  startInEditMode = false,
 }: TaskModalProps) => {
-
-  // ✅ Added state for editing
-  const [isEditing, setIsEditing] = useState(false);
+  const [isEditing, setIsEditing] = useState(startInEditMode);
   const [editTitle, setEditTitle] = useState(title);
-  const [editDescription, setEditDescription] = useState(description);
-  const [editCrescents, setEditCrescents] = useState(activeCrescents);
-  const [editVolunteers, setEditVolunteers] = useState(volunteersNeeded || "");
+  const [editDesc, setEditDesc] = useState(description);
 
-  // ✅ Reset edit state if modal opens/closes or props change
+  // Sync state if props change while modal is open
   useEffect(() => {
-    if (open) {
-      setIsEditing(false);
-      setEditTitle(title);
-      setEditDescription(description);
-      setEditCrescents(activeCrescents);
-      setEditVolunteers(volunteersNeeded || "");
-    }
-  }, [open, title, description, activeCrescents, volunteersNeeded]);
+    setEditTitle(title);
+    setEditDesc(description);
+  }, [title, description]);
 
-  // ✅ Close or cancel edit on Escape key
+  // Close on Escape key
   useEffect(() => {
     if (!open) return;
-    const handler = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        if (isEditing) setIsEditing(false);
-        else onClose();
-      }
-    };
+    const handler = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
-  }, [open, isEditing, onClose]);
-
-  const handleSave = () => {
-    onUpdate?.({
-      title: editTitle,
-      description: editDescription,
-      activeCrescents: editCrescents,
-      volunteersNeeded: editVolunteers ? Number(editVolunteers) : undefined,
-    });
-    setIsEditing(false);
-  };
+  }, [open, onClose]);
 
   if (!open) return null;
 
+  const handleSave = () => {
+    if (onUpdate) {
+      onUpdate({ title: editTitle, description: editDesc });
+    }
+    setIsEditing(false);
+  };
+
   return createPortal(
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center px-4 bg-black/60 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-center justify-center px-4 bg-black/80 backdrop-blur-sm"
       onClick={onClose}
     >
       <div
-        className={`relative w-full max-w-md bg-(--panel-deep) rounded-2xl overflow-hidden ${
-          completed
-            ? "border border-(--gold-cream) shadow-[0_0_40px_8px_rgba(212,175,55,0.22)]"
-            : "border border-(--gold-cream)/50 shadow-[0_0_40px_6px_rgba(212,175,55,0.15)]"
-        }`}
+        className={`
+          relative w-full max-w-md bg-(--bg-dark) rounded-2xl overflow-hidden
+          ${completed
+            ? "border-2 border-(--gold-bright) shadow-[0_0_40px_rgba(57,255,20,0.3)]"
+            : "border-2 border-(--gold-cream) shadow-[0_0_40px_rgba(0,242,255,0.2)]"
+          }
+        `}
         onClick={(e) => e.stopPropagation()}
       >
         {/* ── Header bar ── */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-(--gold-cream)/20">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-(--gold-cream)/30 bg-black/40">
           <h2 className="flex-1 text-center font-bold text-(--gold-cream) text-sm tracking-[0.15em] uppercase">
-            {isEditing ? "Edit Task" : `${title} Details`}
+            Mission Details
           </h2>
-          <div className="flex gap-2">
-            {/* ✅ Edit / Save Button */}
-            {!completed && (
-              <button
-                onClick={() => (isEditing ? handleSave() : setIsEditing(true))}
-                className="px-3 h-8 flex items-center justify-center rounded-full text-xs font-bold border border-[#FFF1AA]/40 text-[#FFF1AA]/80 hover:border-[#FFF1AA] hover:text-[#FFF1AA] transition-colors"
-              >
-                {isEditing ? "SAVE" : "EDIT"}
-              </button>
-            )}
-            {/* ✅ Delete Button */}
-            <button
-              onClick={onDelete}
-              className="px-3 h-8 flex items-center justify-center rounded-full text-xs font-bold border border-red-500/40 text-red-400 hover:border-red-500 hover:text-red-500 transition-colors"
-            >
-              DELETE
-            </button>
-            <button
-              onClick={onClose}
-              className="w-8 h-8 flex items-center justify-center rounded-full border border-[#FFF1AA]/40 text-[#FFF1AA]/80 hover:border-[#FFF1AA] hover:text-[#FFF1AA] transition-colors"
-              aria-label="Close"
-            >
-              ✕
-            </button>
-          </div>
+          <button
+            onClick={onClose}
+            className="ml-4 w-8 h-8 flex items-center justify-center rounded-full border border-(--gold-cream)/40 text-(--gold-cream) hover:border-(--gold-primary) hover:text-(--gold-primary) transition-colors"
+          >
+            ✕
+          </button>
         </div>
 
         {/* ── Body ── */}
         <div className="px-6 pt-5 pb-6 flex flex-col gap-4">
-          {/* Title + crescents + date */}
-          <div className="flex flex-col items-center gap-3">
-            {isEditing ? (
-              <input
-                value={editTitle}
-                onChange={(e) => setEditTitle(e.target.value)}
-                className="w-full text-center bg-black/20 border-b border-(--gold-cream)/50 text-(--gold-primary) text-2xl font-bold font-lexend focus:outline-none focus:border-(--gold-bright) px-2 py-1"
+          
+          {/* Edit Mode vs View Mode */}
+          {isEditing ? (
+            <div className="flex flex-col gap-3">
+              <input 
+                value={editTitle} 
+                onChange={e => setEditTitle(e.target.value)}
+                className="bg-black/50 border border-(--gold-cream) text-white px-3 py-2 rounded focus:outline-none focus:border-(--gold-primary)"
               />
-            ) : (
-              <h1 className="font-bold text-(--gold-primary) text-3xl font-lexend text-center">{title}</h1>
-            )}
-
-            <div className="flex items-center gap-2">
-              {Array.from({ length: 5 }).map((_, i) => (
-                <img
-                  key={i}
-                  src={Crescent}
-                  alt={i < (isEditing ? editCrescents : activeCrescents) ? "active" : "inactive"}
-                  onClick={() => isEditing && setEditCrescents(i + 1)}
-                  className={`w-7 h-7 ${
-                    i < (isEditing ? editCrescents : activeCrescents) ? "crescent-active" : "crescent-inactive"
-                  } ${isEditing ? "cursor-pointer hover:scale-110 transition-transform" : ""}`}
-                />
-              ))}
-            </div>
-            <p className="font-semibold text-(--gold-cream) text-sm">Date: {date}</p>
-          </div>
-
-          <div className="border-t border-(--gold-cream)/15" />
-
-          {/* Description */}
-          <div>
-            <p className="font-bold text-(--gold-primary) text-sm mb-1">Description</p>
-            {isEditing ? (
-              <textarea
-                value={editDescription}
-                onChange={(e) => setEditDescription(e.target.value)}
+              <textarea 
+                value={editDesc}
+                onChange={e => setEditDesc(e.target.value)}
                 rows={4}
-                className="w-full bg-black/20 border border-(--gold-cream)/50 rounded-lg p-3 text-amber-100/80 text-sm focus:outline-none focus:border-(--gold-bright) resize-none"
+                className="bg-black/50 border border-(--gold-cream) text-white px-3 py-2 rounded focus:outline-none focus:border-(--gold-primary) resize-none"
               />
-            ) : (
-              <p className="text-amber-100/80 text-sm leading-relaxed">{description}</p>
-            )}
-          </div>
-
-          {/* Volunteers Needed */}
-          <div>
-            <p className="font-bold text-(--gold-primary) text-sm mb-1">Volunteers Needed:</p>
-            {isEditing ? (
-              <input
-                type="number"
-                value={editVolunteers}
-                onChange={(e) => setEditVolunteers(e.target.value)}
-                placeholder="Number of volunteers"
-                className="w-full bg-black/20 border border-(--gold-cream)/50 rounded-lg p-2 text-amber-100/80 text-sm focus:outline-none focus:border-(--gold-bright)"
-              />
-            ) : volunteersNeeded ? (
-              <p className="text-sm text-amber-100/80 flex items-center gap-2">
-                <svg className="w-5 h-5 shrink-0 fill-[#D4AF37]" viewBox="0 0 24 24">
-                  <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z" />
-                </svg>
-                <span>{volunteersNeeded} volunteers required</span>
-              </p>
-            ) : (
-              <p className="text-sm text-amber-100/50 italic">None specified</p>
-            )}
-          </div>
-
-          {/* Summary bullet list (Hidden while editing for cleaner UI) */}
-          {!isEditing && summary.length > 0 && (
-            <div>
-              <p className="font-bold text-(--gold-primary) text-sm mb-2">Summary:</p>
-              <ul className="space-y-1 pl-1">
-                {summary.map((item, i) => (
-                  <li key={i} className="flex gap-2 text-sm text-amber-100/80">
-                    <span className="text-amber-200/60 mt-0.5">•</span>
-                    <span>{item}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-
-          {/* Completed banner */}
-          {completed && (
-            <div className="w-full flex flex-col items-center gap-2 mt-2">
-              <div className="flex items-center w-full justify-center gap-4">
-                <span className="h-1 rounded bg-(--gold-cream) w-20" />
-                <span className="text-(--gold-bright) text-2xl font-bold tracking-wide">Completed</span>
-                <span className="h-1 rounded bg-(--gold-cream) w-20" />
+              <div className="flex gap-2 justify-end mt-2">
+                <button onClick={() => setIsEditing(false)} className="text-gray-400 text-sm hover:text-white">Cancel</button>
+                <button onClick={handleSave} className="bg-(--gold-cream) text-black px-4 py-1 rounded font-bold hover:bg-(--gold-primary)">Save</button>
               </div>
-              <p className="text-amber-200/60 text-sm">{completedOn ?? date}</p>
             </div>
-          )}
+          ) : (
+            <>
+              {/* Title + stars + date */}
+              <div className="flex flex-col items-center gap-3">
+                {/* ✅ ADDED: The Tag Badge */}
+                {tag && (
+                  <span className="text-[10px] font-black px-3 py-1 rounded bg-(--gold-cream)/20 text-(--gold-cream) border border-(--gold-cream) uppercase tracking-wider shadow-[0_0_5px_rgba(0,242,255,0.4)]">
+                    {tag}
+                  </span>
+                )}
+                
+                <h1 className="font-bold text-white text-3xl uppercase text-center">{title}</h1>
+                <div className="flex items-center gap-2">
+                  {Array.from({ length: 5 }).map((_, i) => (
+                    <img key={i} src={star_priority}
+                      alt={i < activeCrescents ? "active" : "inactive"}
+                      className={`w-6 h-6 ${i < activeCrescents ? "drop-shadow-[0_0_5px_var(--gold-primary)]" : "opacity-20 grayscale"}`}
+                    />
+                  ))}
+                </div>
+                <p className="font-bold text-gray-500 text-xs tracking-widest uppercase">{date}</p>
+              </div>
 
-          {/* CTA Button */}
-          {!isEditing && (
-            completed ? (
-              <button
-                onClick={() => onToggleCompleted?.()}
-                className="mt-1 w-full py-3 rounded-full border-2 border-[#D4AF37]/60 text-[#D4AF37]/80 text-sm font-bold tracking-widest hover:border-[#D4AF37] hover:text-[#D4AF37] transition-all flex items-center justify-center gap-2"
-              >
-                <span>✓</span>
-                <span>COMPLETED{completedOn ? ` · ${completedOn}` : ""}</span>
-              </button>
-            ) : (
-              <button
-                onClick={() => onToggleCompleted?.()}
-                className="mt-1 w-full py-3 rounded-full bg-linear-to-r from-[#C9A227] to-[#E8C84A] text-[#0A1128] font-bold text-sm tracking-widest hover:brightness-110 transition-all shadow-[0_0_18px_2px_rgba(212,175,55,0.3)]"
-              >
-                MARK AS COMPLETED
-              </button>
-            )
+              <div className="border-t border-gray-700/50" />
+
+              {/* Description */}
+              <div>
+                <p className="font-bold text-(--gold-cream) text-xs tracking-wider uppercase mb-1">Objectives:</p>
+                <p className="text-gray-300 text-sm leading-relaxed">{description}</p>
+              </div>
+
+              {/* ✅ ADDED: Volunteers / Co-op Players Needed */}
+              {volunteersNeeded ? (
+                <div>
+                  <p className="font-bold text-(--gold-cream) text-xs tracking-wider uppercase mb-1">Co-op Squad Required:</p>
+                  <p className="text-sm text-gray-300 flex items-center gap-2">
+                    <span className="text-(--gold-primary) text-lg">🕹️</span>
+                    <span className="font-bold">{volunteersNeeded} Player{volunteersNeeded > 1 ? 's' : ''} Needed</span>
+                  </p>
+                </div>
+              ) : null}
+
+              {/* AI Summary bullet list */}
+              {summary.length > 0 && (
+                <div>
+                  <p className="font-bold text-(--gold-cream) text-xs tracking-wider uppercase mb-2">Summary:</p>
+                  <ul className="space-y-1 pl-1">
+                    {summary.map((item, i) => (
+                      <li key={i} className="flex gap-2 text-sm text-gray-400">
+                        <span className="text-(--gold-cream) mt-0.5">▶</span>
+                        <span>{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {/* Action Button ( Delete ) */}
+              <div className="flex gap-4 justify-center mt-2">
+                 <button onClick={onDelete} className="text-sm text-gray-400 hover:text-red-500 uppercase tracking-widest font-bold">Delete</button>
+              </div>
+
+              {/* CTA Button */}
+              {completed ? (
+                <button
+                  onClick={onToggleCompleted}
+                  className="mt-2 w-full py-3 rounded border-2 border-(--gold-bright) text-(--gold-bright) text-sm font-black tracking-widest hover:bg-(--gold-bright)/10 transition-all uppercase"
+                >
+                  [ MISSION CLEAR ]
+                </button>
+              ) : (
+                <button
+                  onClick={onToggleCompleted}
+                  className="mt-2 w-full py-3 rounded bg-(--gold-cream) text-black font-black text-sm tracking-widest hover:bg-(--gold-primary) transition-all shadow-[0_0_15px_rgba(0,242,255,0.4)] uppercase"
+                >
+                  MARK AS COMPLETED
+                </button>
+              )}
+            </>
           )}
         </div>
       </div>
