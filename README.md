@@ -1,7 +1,6 @@
 # Participator Name 
 Abdullah Talal Balubaid
 
-A brief, punchy description of your project goes here. Turn your chores into epic missions!
 
 ## Tech Stack 🛠️
 
