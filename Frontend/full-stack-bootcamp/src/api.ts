@@ -28,19 +28,20 @@ export type Task = {
 
 // Internal helper — maps the raw backend object to our Task shape.
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
+// api.ts - Update the mapTask function
 function mapTask(raw: any): Task {
   return {
     id: raw.id,
-    title: raw.title,
-    description: raw.description,
-    date: raw.date,
-    activeCrescents: raw.priority ?? 0,  // backend calls it "priority"
-    variant: raw.variant,
-    completed: raw.completed,
+    title: raw.title || "Untitled Mission", // Fallback if AI fails
+    description: raw.description || "",
+    date: raw.date || new Date().toLocaleDateString(),
+    activeCrescents: raw.priority ?? raw.activeCrescents ?? 0, 
+    variant: raw.variant || "small",
+    completed: raw.completed || false,
     completedOn: raw.completedOn,
-    summary: raw.summary,
-    volunteersNeeded: raw.volunteersNeeded,
-    tag:raw.tag,
+    summary: Array.isArray(raw.summary) ? raw.summary : [],
+    volunteersNeeded: raw.volunteersNeeded ?? 0,
+    tag: raw.tag || "GENERAL",
   };
 }
 

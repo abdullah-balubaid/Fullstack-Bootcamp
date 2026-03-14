@@ -51,7 +51,7 @@ def update_todo_route(todo_id):
 
 @app.route('/todos/<int:todo_id>/complete', methods=['PUT'])
 def complete_todo(todo_id):
-    todo = crud.get_todo(todo_id)
+    todo = crud.get_todo_by_id(todo_id)
     if todo is None:
         return jsonify({'error': 'Todo not found'}), 404
     data = crud.update_todo(todo_id, {'completed': True, 'completedOn': todo['date']})

@@ -7,7 +7,7 @@ import Input from "./components/Input";
 import TaskCard from "./components/TaskCard";
 import TaskModal from "./components/TaskModal";
 import ParticleBackground from "./components/ParticleBackground";
-import { getAllTasks,completeTask, updateTask, deleteTask } from "./api";
+import { getAllTasks, completeTask, updateTask, deleteTask } from "./api";
 import type { Task } from "./api";
 
 
@@ -15,6 +15,8 @@ function App() {
   const [openTaskId, setOpenTaskId] = useState<number | null>(null);
   const [tasks, setTasks] = useState<Task[]>([]);
   const [isEditMode, setIsEditMode] = useState(false); // Add this line!
+  const handleTaskAdded = (newTask: Task) => {setTasks((prev) => [newTask, ...prev]);
+  };
 
   // ── Task 1: Load tasks from the API when the page first opens ──
   // useEffect with [] runs exactly once — after the first render.
@@ -23,12 +25,6 @@ function App() {
   }, []);
 
   const openTask = tasks.find((t) => t.id === openTaskId) ?? null;
-
-  // Called from Input.tsx after a new task is created.
-  // Adds the new task to the list without re-fetching everything.
-  const handleTaskAdded = (newTask: Task) => {
-    setTasks((prev) => [...prev, newTask]);
-  };
 
   // Toggle a task between completed / not completed.
   const handleToggleCompleted = async (id: number) => {
@@ -83,15 +79,20 @@ function App() {
           onToggleEdit={() => setIsEditMode(!isEditMode)} 
         />
 
+        
+
         {/* Task card grid */}
-        <div className="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 items-stretch">
-          {tasks.map((task) => (
+        <div className="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {tasks.length === 0 ? (
+          <p className="col-span-full text-center opacity-50">No missions found. Deploy Gemini to create one.</p>
+        ) : (
+          tasks.map((task) => (
             <TaskCard
               key={task.id}
               {...task}
-              onClick={() => setOpenTaskId(task.id)}
-            />
-          ))}
+              onClick={() => setOpenTaskId(task.id)}/>
+          ))
+        )}
         </div>
       </div>
     </div>
