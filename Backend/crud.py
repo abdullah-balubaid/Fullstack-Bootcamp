@@ -52,7 +52,7 @@ Expected Output:
 }}
 
 
-Notice we are in {{current_time}}, so the date should be generated accordingly if not mentioned in the description."""
+Notice we are in {current_time}, so the date should be generated accordingly if not mentioned in the description."""
     
     client = genai.Client(api_key=GEMINI_API_KEY)
     try:
