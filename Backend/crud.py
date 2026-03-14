@@ -10,7 +10,7 @@ def create_todo(description):
     client = genai.Client(api_key=GEMINI_API_KEY)
     try:
         response = client.models.generate_content(
-            model='gemini-2.0-flash', # Updated to the latest stable model name
+            model='gemini-3.0-flash', # Updated to the latest stable model name
             contents=prompt.format(description=description, current_time=helpers.get_current_date_formatted()),
         )
         content = response.text
