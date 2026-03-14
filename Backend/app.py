@@ -39,15 +39,15 @@ def get_todo_route(todo_id):
         return jsonify({"error": "Task Not Found"}), 404
     return jsonify(task)
 
-@app.route('/todos/<int:todo_id>', methods=["PUT"])
-def update_todo_route(todo_id):
-    task = crud.get_todo_by_id(todo_id)
-    if task is None:
-        return jsonify({"error": "Task Not Found"}), 404
+# @app.route('/todos/<int:todo_id>', methods=["PUT"])
+# def update_todo_route(todo_id):
+#     task = crud.get_todo_by_id(todo_id)
+#     if task is None:
+#         return jsonify({"error": "Task Not Found"}), 404
 
-    update_data = request.get_json()
-    updated_task = crud.update_todo(todo_id, update_data)
-    return jsonify(updated_task), 200
+#     update_data = request.get_json()
+#     updated_task = crud.update_todo(todo_id, update_data)
+#     return jsonify(updated_task), 200
 
 @app.route('/todos/<int:todo_id>/complete', methods=['PUT'])
 def complete_todo(todo_id):
